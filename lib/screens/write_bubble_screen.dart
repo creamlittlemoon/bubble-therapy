@@ -13,6 +13,7 @@ class WriteBubbleScreen extends StatefulWidget {
 class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
+  int _intensity = 3; // 1-5
 
   @override
   void initState() {
@@ -58,6 +59,45 @@ class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
               'Write your worry, fear, or anything you want to release',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
+            const SizedBox(height: 16),
+            Text(
+              'How intense does it feel? (1 = light, 5 = heavy)',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(5, (i) {
+                final level = i + 1;
+                final selected = _intensity == level;
+                return GestureDetector(
+                  onTap: () => setState(() => _intensity = level),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? AppColors.primaryWithOpacity(0.15)
+                          : AppColors.surfaceVariant,
+                      shape: BoxShape.circle,
+                      border: selected
+                          ? Border.all(color: AppColors.primary, width: 2)
+                          : null,
+                    ),
+                    child: Text(
+                      '$level',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: selected
+                            ? AppColors.primary
+                            : AppColors.textMuted,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
             const SizedBox(height: 24),
             Expanded(
               child: Container(
@@ -99,7 +139,10 @@ class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
                     ? null
                     : () {
                         Provider.of<BubbleProvider>(context, listen: false)
-                            .addBubble(_controller.text.trim());
+                            .addBubble(
+                          _controller.text.trim(),
+                          intensity: _intensity,
+                        );
                         Navigator.pop(context);
                       },
                 style: ElevatedButton.styleFrom(

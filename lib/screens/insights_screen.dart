@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../models/models.dart';
 import '../providers/app_provider.dart';
 import '../providers/bubble_provider.dart';
 import '../providers/memory_provider.dart';
@@ -83,6 +85,22 @@ class InsightsScreen extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 32),
+
+              // Last 7 days — verify accumulation across days
+              Text(
+                'Last 7 days',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Bubbles created and released by day. Today is highlighted.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textMuted,
+                    ),
+              ),
+              const SizedBox(height: 16),
+              _Last7DaysSection(summaries: bubbleProvider.getLast7DaySummaries()),
               const SizedBox(height: 32),
 
               // Weekly Summary
@@ -319,6 +337,107 @@ class InsightsScreen extends StatelessWidget {
               fontSize: 14,
               color: AppColors.textMuted,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Last7DaysSection extends StatelessWidget {
+  const _Last7DaysSection({required this.summaries});
+  final List<DaySummary> summaries;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: summaries
+          .map((day) => _buildDayCard(context, day))
+          .toList(),
+    );
+  }
+
+  Widget _buildDayCard(BuildContext context, DaySummary day) {
+    final now = DateTime.now();
+    final yesterday = now.subtract(const Duration(days: 1));
+    final String label;
+    if (day.isToday) {
+      label = 'Today';
+    } else if (day.date.year == yesterday.year &&
+        day.date.month == yesterday.month &&
+        day.date.day == yesterday.day) {
+      label = 'Yesterday';
+    } else {
+      label = DateFormat('EEE, MMM d').format(day.date);
+    }
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: day.isToday
+            ? AppColors.primaryWithOpacity(0.08)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: day.isToday
+            ? Border.all(color: AppColors.primaryWithOpacity(0.3), width: 1)
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight:
+                            day.isToday ? FontWeight.bold : FontWeight.w600,
+                        color: day.isToday
+                            ? AppColors.primary
+                            : AppColors.textPrimary,
+                      ),
+                ),
+                if (day.isToday) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryWithOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Today',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Text(
+            '${day.totalBubbles} created',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            '${day.releasedCount} released',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.accentGreen,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),

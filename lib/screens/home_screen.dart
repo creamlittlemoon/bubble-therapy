@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import '../models/models.dart';
 import '../providers/bubble_provider.dart';
 import '../providers/memory_provider.dart';
 import '../theme/app_colors.dart';
@@ -15,6 +16,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bubbleProvider = Provider.of<BubbleProvider>(context);
     final unreleased = bubbleProvider.unreleasedBubbles;
+    final todayKey = Bubble.dayKeyFrom(DateTime.now());
+    final todayUnreleased = unreleased.where((b) => b.dayKey == todayKey).length;
+    final earlierUnreleased = unreleased.length - todayUnreleased;
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -42,6 +46,19 @@ class HomeScreen extends StatelessWidget {
                         'Release your worries into bubbles',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
+                      if (unreleased.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          todayUnreleased > 0 && earlierUnreleased > 0
+                              ? '$todayUnreleased from today, $earlierUnreleased from earlier'
+                              : todayUnreleased > 0
+                                  ? '$todayUnreleased from today'
+                                  : '$earlierUnreleased from earlier days',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.textMuted,
+                              ),
+                        ),
+                      ],
                     ],
                   ),
                   Opacity(

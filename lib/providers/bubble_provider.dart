@@ -8,11 +8,13 @@ class BubbleProvider extends ChangeNotifier {
   StorageService? _storage;
 
   List<Bubble> get bubbles => _bubbles;
-  List<Bubble> get unreleasedBubbles => 
-    _bubbles.where((b) => !b.isReleased).toList();
-  List<Bubble> get todaysBubbles => 
-    _bubbles.where((b) => _isToday(b.createdAt)).toList();
-  
+  List<Bubble> get unreleasedBubbles =>
+      _bubbles.where((b) => !b.isReleased).toList();
+  List<Bubble> get todaysBubbles =>
+      _bubbles.where((b) => _isToday(b.createdAt)).toList();
+  List<Bubble> get bubblesByDayKey => List.from(_bubbles)
+    ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
   int get totalBubbles => _bubbles.length;
   int get releasedCount => _bubbles.where((b) => b.isReleased).length;
   int get pendingCount => unreleasedBubbles.length;
@@ -40,16 +42,52 @@ class BubbleProvider extends ChangeNotifier {
         date.day == now.day;
   }
 
-  void addBubble(String worry) {
+  /// Summaries for the last 7 days (including today). Newest first.
+  List<DaySummary> getLast7DaySummaries() {
+    final now = DateTime.now();
+    final todayKey = Bubble.dayKeyFrom(now);
+    final keys = <String>[];
+    for (var i = 0; i < 7; i++) {
+      final d = now.subtract(Duration(days: i));
+      keys.add(Bubble.dayKeyFrom(d));
+    }
+    final result = <DaySummary>[];
+    for (final key in keys) {
+      final dayBubbles = _bubbles.where((b) => b.dayKey == key).toList();
+      final parts = key.split('-');
+      final date = key == todayKey
+          ? now
+          : DateTime(
+              int.parse(parts[0]),
+              int.parse(parts[1]),
+              int.parse(parts[2]),
+            );
+      result.add(DaySummary(
+        dayKey: key,
+        date: date,
+        totalBubbles: dayBubbles.length,
+        releasedCount: dayBubbles.where((b) => b.isReleased).length,
+        pendingCount: dayBubbles.where((b) => !b.isReleased).length,
+        isToday: key == todayKey,
+      ));
+    }
+    return result;
+  }
+
+  void addBubble(String worry, {String? emotion, int? intensity}) {
+    final now = DateTime.now();
+    final dayKey = Bubble.dayKeyFrom(now);
     final bubble = Bubble(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: now.millisecondsSinceEpoch.toString(),
       worry: worry,
-      createdAt: DateTime.now(),
+      createdAt: now,
+      emotion: emotion,
+      intensity: (intensity ?? 3).clamp(1, 5),
+      dayKey: dayKey,
       size: 80 + (worry.length * 2).clamp(0, 40).toDouble(),
       posX: (100 + (_bubbles.length * 50) % 250).toDouble(),
       posY: (100 + (_bubbles.length * 30) % 300).toDouble(),
     );
-    
     _bubbles.add(bubble);
     _dailyBubbleCount++;
     notifyListeners();
@@ -131,9 +169,7 @@ class BubbleProvider extends ChangeNotifier {
       'It\'s okay to feel this way. Every worry released makes space for peace.',
       'You\'re doing great. Acknowledging your feelings is the first step.',
     ];
-    final emotions = ['anxious', 'sad', 'stressed', 'tired', 'angry'];
     final demoBubbles = <Bubble>[
-      // 2 released (3 days ago, 2 days ago)
       Bubble(
         id: 'demo_1',
         worry: 'Meeting deadline at work',
@@ -141,6 +177,8 @@ class BubbleProvider extends ChangeNotifier {
         isReleased: true,
         reflection: releasedReflections[0],
         emotion: 'stressed',
+        intensity: 4,
+        dayKey: Bubble.dayKeyFrom(now.subtract(const Duration(days: 3))),
         size: 100,
         posX: 120,
         posY: 180,
@@ -152,17 +190,20 @@ class BubbleProvider extends ChangeNotifier {
         isReleased: true,
         reflection: releasedReflections[1],
         emotion: 'sad',
+        intensity: 3,
+        dayKey: Bubble.dayKeyFrom(now.subtract(const Duration(days: 2))),
         size: 92,
         posX: 80,
         posY: 220,
       ),
-      // Unreleased across last 3 days
       Bubble(
         id: 'demo_3',
         worry: 'Too much on my mind lately',
         createdAt: now.subtract(const Duration(days: 2)),
         isReleased: false,
         emotion: 'anxious',
+        intensity: 5,
+        dayKey: Bubble.dayKeyFrom(now.subtract(const Duration(days: 2))),
         size: 110,
         posX: 160,
         posY: 100,
@@ -173,6 +214,8 @@ class BubbleProvider extends ChangeNotifier {
         createdAt: now.subtract(const Duration(days: 1)),
         isReleased: false,
         emotion: 'tired',
+        intensity: 2,
+        dayKey: Bubble.dayKeyFrom(now.subtract(const Duration(days: 1))),
         size: 88,
         posX: 90,
         posY: 260,
@@ -183,6 +226,8 @@ class BubbleProvider extends ChangeNotifier {
         createdAt: now.subtract(const Duration(days: 1)),
         isReleased: false,
         emotion: 'angry',
+        intensity: 3,
+        dayKey: Bubble.dayKeyFrom(now.subtract(const Duration(days: 1))),
         size: 96,
         posX: 200,
         posY: 140,
@@ -193,6 +238,8 @@ class BubbleProvider extends ChangeNotifier {
         createdAt: now,
         isReleased: false,
         emotion: 'anxious',
+        intensity: 4,
+        dayKey: Bubble.dayKeyFrom(now),
         size: 104,
         posX: 130,
         posY: 200,
@@ -203,6 +250,8 @@ class BubbleProvider extends ChangeNotifier {
         createdAt: now,
         isReleased: false,
         emotion: 'tired',
+        intensity: 2,
+        dayKey: Bubble.dayKeyFrom(now),
         size: 85,
         posX: 170,
         posY: 160,
