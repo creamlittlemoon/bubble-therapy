@@ -1,63 +1,60 @@
 # Bubble Therapy
 
-一款面向海外市场的 Wellness App，帮助用户通过呼吸练习、冥想和情绪追踪来管理压力和焦虑。
+Release daily worries through a calming ritual: Worry → Bubble → Release → Star
 
-## 项目概述
+## Core Experience
 
-**目标市场**: 北美/欧洲海外市场  
-**核心价值**: 通过科学的呼吸练习和正念冥想，帮助用户缓解压力、改善睡眠、提升专注力  
-**MVP功能**:
-1. 呼吸练习引导（多种呼吸模式）
-2. 冥想音频播放
-3. 情绪日记记录
-4. 进度统计
+1. **Write** a short worry
+2. **Convert** it into a floating bubble
+3. **Pop or Release** the bubble
+4. **Receive** a short calming reflection
+5. **Collect** released bubbles as stars in your Memory Sky
 
-## 技术栈
+## Product Loops
 
-- **框架**: Flutter (跨平台 iOS/Android)
-- **音频**: audioplayers
-- **状态管理**: Provider
-- **本地存储**: shared_preferences + hive
-- **国际化**: flutter_localizations
+### Core Loop
+Write worry → Bubble → Pop/Release → Reflection
 
-## 项目结构
+### Retention Loop
+Daily check-in → Bubble release → Night ritual → Return next day
 
-```
-lib/
-├── main.dart
-├── app.dart
-├── models/
-│   ├── breathing_pattern.dart
-│   ├── meditation_session.dart
-│   └── mood_entry.dart
-├── screens/
-│   ├── home_screen.dart
-│   ├── breathing_screen.dart
-│   ├── meditation_screen.dart
-│   ├── mood_screen.dart
-│   └── stats_screen.dart
-├── widgets/
-│   ├── breathing_circle.dart
-│   ├── meditation_card.dart
-│   └── mood_selector.dart
-├── providers/
-│   ├── breathing_provider.dart
-│   └── mood_provider.dart
-└── utils/
-    ├── audio_player.dart
-    └── localization.dart
-```
+### Insight Loop
+Emotion classification → Weekly emotional insight
 
-## 开发计划
+### Growth Loop
+User shares Memory Sky → New users discover product
 
-1. ✅ 项目初始化
-2. 🔄 MVP核心功能开发中
-3. ⏳ UI/UX 优化
-4. ⏳ 国际化支持
-5. ⏳ 测试与发布
+## Features
 
-## 设计规范
+- **Home**: Floating bubble environment with interactive bubbles
+- **Write Bubble**: Text input to create new worries
+- **Bubble Pool**: List of today's bubbles with Night Ritual
+- **Memory Sky**: Stars representing past released bubbles
+- **Insights**: Emotional statistics and weekly summaries
 
-- **主色调**: 柔和蓝紫色系 (#7C9D96, #9CAF88, #E5E5E5)
-- **字体**: Inter / SF Pro
-- **风格**: 极简、治愈、有机曲线
+## Tech Stack
+
+- Flutter
+- Provider state management
+- flutter_animate for animations
+
+## Screens
+
+1. Home - Floating bubbles
+2. Write Bubble - Text input
+3. Bubble Pool - Daily bubbles + Night Ritual
+4. Memory Sky - Star collection
+5. Insights - Emotional analytics
+
+## Emotions Tracked
+
+- Anxious
+- Sad
+- Angry
+- Stressed
+- Tired
+- Lonely
+
+## License
+
+Private - All rights reserved.

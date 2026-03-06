@@ -1,46 +1,219 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import '../providers/ai_breathing_provider.dart';
-import '../providers/mood_provider.dart';
-import 'breathing_screen.dart';
-import 'mood_screen.dart';
+import '../providers/bubble_provider.dart';
+import '../providers/memory_provider.dart';
+import 'write_bubble_screen.dart';
+import 'reflection_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bubbleProvider = Provider.of<BubbleProvider>(context);
+    final unreleased = bubbleProvider.unreleasedBubbles;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F9FC),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with AI greeting
-                _buildHeader(),
-                const SizedBox(height: 24),
-                
-                // AI Recommendation Card
-                _buildAIRecommendation(context),
-                const SizedBox(height: 24),
-                
-                // Quick Stats
-                _buildStatsRow(),
-                const SizedBox(height: 32),
-                
-                // Main Features
-                _buildSectionTitle('Start Your Practice'),
-                const SizedBox(height: 16),
-                _buildFeatureCards(context),
-                const SizedBox(height: 32),
-                
-                // Today's Mood Section
-                _buildSectionTitle('How are you feeling?'),
-                const SizedBox(height: 16),
-                _buildMoodSelector(context),
-              ],
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Bubble Therapy',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2D3748),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Release your worries into bubbles',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: const Color(0xFF718096),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6B9AC4).withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.bubble_chart,
+                      color: Color(0xFF6B9AC4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Floating Bubbles Area
+            Expanded(
+              child: unreleased.isEmpty
+                  ? _buildEmptyState(context)
+                  : _buildBubbleFloatArea(context, unreleased),
+            ),
+
+            // Add Button
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const WriteBubbleScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6B9AC4),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add_circle_outline),
+                      SizedBox(width: 8),
+                      Text(
+                        'New Bubble',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: const Color(0xFF6B9AC4).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.bubble_chart,
+              size: 60,
+              color: Color(0xFF6B9AC4),
+            ),
+          ).animate(onPlay: (c) => c.repeat(reverse: true))
+           .scaleXY(begin: 1, end: 1.1, duration: 2000.ms),
+          const SizedBox(height: 24),
+          const Text(
+            'No worries right now',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3748),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap "New Bubble" when something\'s on your mind',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: const Color(0xFF718096),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBubbleFloatArea(BuildContext context, List bubbles) {
+    return Stack(
+      children: bubbles.asMap().entries.map((entry) {
+        final index = entry.key;
+        final bubble = entry.value;
+        
+        return Positioned(
+          left: bubble.posX ?? (50 + index * 30.0),
+          top: bubble.posY ?? (100 + index * 40.0),
+          child: GestureDetector(
+            onTap: () {
+              _showBubbleOptions(context, bubble);
+            },
+            child: _buildBubbleWidget(bubble),
+          ).animate(onPlay: (c) => c.repeat(reverse: true))
+           .translateY(begin: -5, end: 5, duration: (2000 + index * 200).ms),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildBubbleWidget(dynamic bubble) {
+    final size = bubble.size ?? 100.0;
+    
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            const Color(0xFF6B9AC4).withOpacity(0.3),
+            const Color(0xFF6B9AC4).withOpacity(0.1),
+          ],
+        ),
+        border: Border.all(
+          color: const Color(0xFF6B9AC4).withOpacity(0.3),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6B9AC4).withOpacity(0.2),
+            blurRadius: 20,
+            spreadRadius: 5,
+          ),
+        ],
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            bubble.worry.length > 20 
+                ? '${bubble.worry.substring(0, 20)}...' 
+                : bubble.worry,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: size > 100 ? 14 : 12,
+              color: const Color(0xFF4A5568),
             ),
           ),
         ),
@@ -48,226 +221,91 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+  void _showBubbleOptions(BuildContext context, dynamic bubble) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFF7C9D96).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.auto_awesome,
-                color: Color(0xFF7C9D96),
-                size: 24,
+                color: const Color(0xFFE2E8F0),
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(width: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF7C9D96).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
+            const SizedBox(height: 24),
+            Text(
+              '"${bubble.worry}"',
+              style: const TextStyle(
+                fontSize: 16,
+                fontStyle: FontStyle.italic,
+                color: Color(0xFF4A5568),
               ),
-              child: const Row(
-                children: [
-                  Icon(Icons.smart_toy, size: 16, color: Color(0xFF7C9D96)),
-                  SizedBox(width: 6),
-                  Text(
-                    'AI Powered',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF7C9D96),
-                    ),
-                  ),
-                ],
-              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            _buildOptionButton(
+              context,
+              'Release Bubble',
+              Icons.favorite_border,
+              const Color(0xFF6B9AC4),
+              () {
+                Navigator.pop(context);
+                _showReleaseDialog(context, bubble);
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildOptionButton(
+              context,
+              'Pop Bubble',
+              Icons.close,
+              const Color(0xFFE8A87C),
+              () {
+                Navigator.pop(context);
+                Provider.of<BubbleProvider>(context, listen: false)
+                    .popBubble(bubble.id);
+              },
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        const Text(
-          'Bubble Therapy',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2D3436),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Your personal AI wellness companion',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[600],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Widget _buildAIRecommendation(BuildContext context) {
-    return Consumer<AIBreathingProvider>(
-      builder: (context, provider, _) {
-        if (provider.aiRecommendation == null) {
-          return const SizedBox.shrink();
-        }
-        
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF7C9D96), Color(0xFF9CAF88)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF7C9D96).withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.psychology, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'AI Recommendation',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${(provider.stressLevel * 100).toInt()}% stress',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                provider.aiRecommendation!,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const BreathingScreen()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFF7C9D96),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Start Recommended Session',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatsRow() {
-    return Consumer2<AIBreathingProvider, MoodProvider>(
-      builder: (context, breathingProvider, moodProvider, _) {
-        return Row(
-          children: [
-            _buildStatCard(
-              icon: Icons.local_fire_department,
-              label: 'Day Streak',
-              value: breathingProvider.currentStreak.toString(),
-              color: const Color(0xFFFF7675),
-            ),
-            const SizedBox(width: 12),
-            _buildStatCard(
-              icon: Icons.access_time,
-              label: 'Minutes',
-              value: breathingProvider.totalMinutes.toString(),
-              color: const Color(0xFF74B9FF),
-            ),
-            const SizedBox(width: 12),
-            _buildStatCard(
-              icon: Icons.emoji_emotions,
-              label: 'Moods',
-              value: moodProvider.moodHistory.length.toString(),
-              color: const Color(0xFF9CAF88),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildStatCard({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Expanded(
+  Widget _buildOptionButton(
+    BuildContext context,
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
+            Icon(icon, color: color),
+            const SizedBox(width: 12),
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: color,
               ),
             ),
           ],
@@ -276,280 +314,89 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: Color(0xFF2D3436),
-      ),
-    );
-  }
+  void _showReleaseDialog(BuildContext context, dynamic bubble) {
+    final emotions = ['Anxious', 'Sad', 'Angry', 'Stressed', 'Tired', 'Lonely'];
+    String? selectedEmotion;
 
-  Widget _buildFeatureCards(BuildContext context) {
-    return Column(
-      children: [
-        _buildFeatureCard(
-          context,
-          title: 'AI Breathing Coach',
-          subtitle: 'Personalized breathing exercises',
-          icon: Icons.air,
-          color: const Color(0xFF7C9D96),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const BreathingScreen()),
-          ),
-          badge: 'AI Powered',
-        ),
-        const SizedBox(height: 12),
-        _buildFeatureCard(
-          context,
-          title: 'Mood Tracker',
-          subtitle: 'Track and analyze your emotions',
-          icon: Icons.sentiment_satisfied,
-          color: const Color(0xFF9CAF88),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const MoodScreen()),
-          ),
-        ),
-        const SizedBox(height: 12),
-        _buildFeatureCard(
-          context,
-          title: 'Wellness Insights',
-          subtitle: 'AI-powered personalized reports',
-          icon: Icons.insights,
-          color: const Color(0xFFDDA0DD),
-          onTap: () {},
-          badge: 'Coming Soon',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFeatureCard(
-    BuildContext context, {
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-    String? badge,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D3436),
-                        ),
-                      ),
-                      if (badge != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: color.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            badge,
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: color,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.arrow_forward_ios, color: color, size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMoodSelector(BuildContext context) {
-    return Consumer<MoodProvider>(
-      builder: (context, provider, _) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('How are you feeling?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: MoodType.values.map((mood) {
-                  final isSelected = provider.currentMood == mood;
-                  return GestureDetector(
-                    onTap: () => provider.setMood(mood),
-                    child: Column(
-                      children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? provider.getMoodColor(mood).withOpacity(0.2)
-                                : Colors.grey[100],
-                            borderRadius: BorderRadius.circular(16),
-                            border: isSelected
-                                ? Border.all(color: provider.getMoodColor(mood), width: 2)
-                                : null,
-                          ),
-                          child: Text(
-                            provider.getMoodEmoji(mood),
-                            style: const TextStyle(fontSize: 28),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          provider.getMoodLabel(mood),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            color: isSelected ? provider.getMoodColor(mood) : Colors.grey[600],
-                          ),
-                        ),
-                      ],
+              const Text('Select an emotion (optional)'),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: emotions.map((emotion) => GestureDetector(
+                  onTap: () => setState(() => selectedEmotion = emotion),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
-                  );
-                }).toList(),
-              ),
-              if (provider.currentMood != null) ...[
-                const SizedBox(height: 20),
-                if (provider.aiSuggestions.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7C9D96).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      color: selectedEmotion == emotion
+                          ? const Color(0xFF6B9AC4)
+                          : const Color(0xFFEDF2F7),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(Icons.lightbulb, color: Color(0xFF7C9D96), size: 18),
-                            SizedBox(width: 8),
-                            Text(
-                              'AI Suggestions',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF7C9D96),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        ...provider.aiSuggestions.map((suggestion) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.check_circle, color: Color(0xFF7C9D96), size: 14),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  suggestion,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-                      ],
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    provider.saveMoodEntry();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Mood saved! Keep tracking for AI insights.')),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7C9D96),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Center(
                     child: Text(
-                      'Log Mood',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      emotion,
+                      style: TextStyle(
+                        color: selectedEmotion == emotion
+                            ? Colors.white
+                            : const Color(0xFF4A5568),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                )).toList(),
+              ),
             ],
           ),
-        );
-      },
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                final provider = Provider.of<BubbleProvider>(context, listen: false);
+                provider.releaseBubble(
+                  bubble.id,
+                  emotion: selectedEmotion,
+                );
+                
+                // Add to memory
+                final updatedBubble = provider.bubbles.firstWhere(
+                  (b) => b.id == bubble.id,
+                );
+                Provider.of<MemoryProvider>(context, listen: false)
+                    .addStar(updatedBubble);
+                
+                // Show reflection
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ReflectionScreen(
+                      worry: bubble.worry,
+                      reflection: updatedBubble.reflection ?? '',
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6B9AC4),
+              ),
+              child: const Text('Release'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'providers/ai_breathing_provider.dart';
-import 'providers/mood_provider.dart';
-import 'screens/home_screen.dart';
+import 'providers/app_provider.dart';
+import 'providers/bubble_provider.dart';
+import 'providers/memory_provider.dart';
+import 'screens/main_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const BubbleTherapyApp());
 }
 
@@ -17,8 +22,9 @@ class BubbleTherapyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AIBreathingProvider()),
-        ChangeNotifierProvider(create: (_) => MoodProvider()),
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(create: (_) => BubbleProvider()),
+        ChangeNotifierProvider(create: (_) => MemoryProvider()),
       ],
       child: MaterialApp(
         title: 'Bubble Therapy',
@@ -26,25 +32,41 @@ class BubbleTherapyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF7C9D96),
+            seedColor: const Color(0xFF6B9AC4),
             brightness: Brightness.light,
-            primary: const Color(0xFF7C9D96),
-            secondary: const Color(0xFF9CAF88),
-            surface: const Color(0xFFF8F9FA),
+            primary: const Color(0xFF6B9AC4),
+            secondary: const Color(0xFFE8A87C),
+            surface: const Color(0xFFF7F9FC),
+            background: const Color(0xFFF7F9FC),
           ),
-          fontFamily: 'Inter',
-          scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+          scaffoldBackgroundColor: const Color(0xFFF7F9FC),
+          fontFamily: 'SF Pro Display',
+          textTheme: const TextTheme(
+            displayLarge: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF2D3748),
+              letterSpacing: -0.5,
+            ),
+            displayMedium: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3748),
+              letterSpacing: -0.3,
+            ),
+            bodyLarge: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF4A5568),
+              height: 1.6,
+            ),
+            bodyMedium: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF718096),
+              height: 1.5,
+            ),
+          ),
         ),
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('zh', 'CN'),
-        ],
-        home: const HomeScreen(),
+        home: const MainScreen(),
       ),
     );
   }
