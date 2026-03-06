@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../providers/bubble_provider.dart';
 import '../providers/memory_provider.dart';
+import '../widgets/home_ambient_layer.dart';
 import 'write_bubble_screen.dart';
 import 'reflection_screen.dart';
 
@@ -19,9 +20,9 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Foreground UI layer: header
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -34,6 +35,7 @@ class HomeScreen extends StatelessWidget {
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF2D3748),
+                          letterSpacing: -0.5,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -46,9 +48,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Decorative branding element (not a button)
                   Opacity(
-                    opacity: 0.5,
+                    opacity: 0.45,
                     child: Icon(
                       Icons.bubble_chart,
                       size: 28,
@@ -59,16 +60,28 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Floating Bubbles Area
+            // Middle: ambient layer + interactive bubble layer (or empty state)
             Expanded(
-              child: unreleased.isEmpty
-                  ? _buildEmptyState(context)
-                  : _buildBubbleFloatArea(context, unreleased),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Layer 1 — background ambient (decorative only)
+                  Positioned.fill(
+                    child: const HomeAmbientLayer(),
+                  ),
+                  // Layer 2 — interactive user bubbles or empty-state overlay
+                  Positioned.fill(
+                    child: unreleased.isEmpty
+                        ? _buildEmptyState(context)
+                        : _buildBubbleFloatArea(context, unreleased),
+                  ),
+                ],
+              ),
             ),
 
-            // Add Button
+            // Foreground UI layer: CTA
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               child: SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -115,35 +128,24 @@ class HomeScreen extends StatelessWidget {
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: const Color(0xFF6B9AC4).withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.bubble_chart,
-                size: 60,
-                color: Color(0xFF6B9AC4),
-              ),
-            ).animate(onPlay: (c) => c.repeat(reverse: true))
-             .scaleXY(begin: 1, end: 1.1, duration: 2000.ms),
-            const SizedBox(height: 24),
             const Text(
               'Your mind is clear for now',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF2D3748),
+                letterSpacing: -0.3,
               ),
               textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
+            )
+                .animate()
+                .fadeIn(duration: 600.ms, curve: Curves.easeOut)
+                .slideY(begin: 0.08, end: 0, duration: 500.ms, curve: Curves.easeOut),
+            const SizedBox(height: 12),
             const Text(
               'When something feels heavy, tap "New Bubble" below. '
               'Write it down, turn it into a bubble, and release it when you\'re ready.',
@@ -151,9 +153,12 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 color: Color(0xFF718096),
-                height: 1.5,
+                height: 1.55,
               ),
-            ),
+            )
+                .animate(delay: 150.ms)
+                .fadeIn(duration: 500.ms, curve: Curves.easeOut)
+                .slideY(begin: 0.06, end: 0, duration: 450.ms, curve: Curves.easeOut),
           ],
         ),
       ),
@@ -162,7 +167,10 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildBubbleFloatArea(BuildContext context, List bubbles) {
     return Stack(
-      children: bubbles.asMap().entries.map((entry) {
+      clipBehavior: Clip.none,
+      children: [
+        const SizedBox.expand(), // Fill layer so Stack takes full area
+        ...bubbles.asMap().entries.map((entry) {
         final index = entry.key;
         final bubble = entry.value;
         
@@ -175,15 +183,16 @@ class HomeScreen extends StatelessWidget {
             },
             child: _buildBubbleWidget(bubble),
           ).animate(onPlay: (c) => c.repeat(reverse: true))
-           .move(begin: const Offset(0, -5), end: const Offset(0, 5), duration: (2000 + index * 200).ms),
+           .move(begin: const Offset(0, -4), end: const Offset(0, 4), duration: (2400 + index * 180).ms),
         );
-      }).toList(),
+      }),
+      ],
     );
   }
 
   Widget _buildBubbleWidget(dynamic bubble) {
     final size = bubble.size ?? 100.0;
-    
+
     return Container(
       width: size,
       height: size,
@@ -191,19 +200,19 @@ class HomeScreen extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            const Color(0xFF6B9AC4).withOpacity(0.3),
-            const Color(0xFF6B9AC4).withOpacity(0.1),
+            const Color(0xFF6B9AC4).withOpacity(0.45),
+            const Color(0xFF6B9AC4).withOpacity(0.18),
           ],
         ),
         border: Border.all(
-          color: const Color(0xFF6B9AC4).withOpacity(0.3),
+          color: const Color(0xFF6B9AC4).withOpacity(0.5),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6B9AC4).withOpacity(0.2),
-            blurRadius: 20,
-            spreadRadius: 5,
+            color: const Color(0xFF6B9AC4).withOpacity(0.25),
+            blurRadius: 16,
+            spreadRadius: 2,
           ),
         ],
       ),
