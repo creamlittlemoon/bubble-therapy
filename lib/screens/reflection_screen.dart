@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../theme/app_colors.dart';
 
 class ReflectionScreen extends StatelessWidget {
   final String worry;
@@ -14,7 +15,7 @@ class ReflectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -26,13 +27,13 @@ class ReflectionScreen extends StatelessWidget {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE8A87C).withOpacity(0.2),
+                  color: AppColors.secondaryWithOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.star,
                   size: 50,
-                  color: Color(0xFFE8A87C),
+                  color: AppColors.secondary,
                 ),
               )
                   .animate()
@@ -48,25 +49,25 @@ class ReflectionScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6B9AC4).withOpacity(0.1),
+                  color: AppColors.primaryWithOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'You released:',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF718096),
+                        color: AppColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '"$worry"',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontStyle: FontStyle.italic,
-                        color: Color(0xFF4A5568),
+                        color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -92,18 +93,18 @@ class ReflectionScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.format_quote,
-                      color: Color(0xFF6B9AC4),
+                      color: AppColors.primary,
                       size: 32,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       reflection,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         height: 1.6,
-                        color: Color(0xFF2D3748),
+                        color: AppColors.textPrimary,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -123,8 +124,8 @@ class ReflectionScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6B9AC4),
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

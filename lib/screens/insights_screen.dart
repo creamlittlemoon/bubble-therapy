@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/bubble_provider.dart';
 import '../providers/memory_provider.dart';
+import '../theme/app_colors.dart';
 
 class InsightsScreen extends StatelessWidget {
   const InsightsScreen({super.key});
@@ -14,7 +15,7 @@ class InsightsScreen extends StatelessWidget {
     final weeklyStats = memoryProvider.getWeeklyStats();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -22,21 +23,17 @@ class InsightsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              const Text(
+              Text(
                 'Insights',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3748),
-                ),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Understanding your emotional patterns',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: const Color(0xFF718096),
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 32),
 
@@ -48,7 +45,7 @@ class InsightsScreen extends StatelessWidget {
                       'Total Bubbles',
                       bubbleProvider.totalBubbles.toString(),
                       Icons.bubble_chart,
-                      const Color(0xFF6B9AC4),
+                      AppColors.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -57,7 +54,7 @@ class InsightsScreen extends StatelessWidget {
                       'Released',
                       bubbleProvider.releasedCount.toString(),
                       Icons.check_circle,
-                      const Color(0xFF7C9885),
+                      AppColors.accentGreen,
                     ),
                   ),
                 ],
@@ -70,7 +67,7 @@ class InsightsScreen extends StatelessWidget {
                       'Stars',
                       memoryProvider.starCount.toString(),
                       Icons.star,
-                      const Color(0xFFE8A87C),
+                      AppColors.secondary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -79,7 +76,7 @@ class InsightsScreen extends StatelessWidget {
                       'Pending',
                       bubbleProvider.pendingCount.toString(),
                       Icons.hourglass_empty,
-                      const Color(0xFF9F7AEA),
+                      AppColors.emotionAnxious,
                     ),
                   ),
                 ],
@@ -88,13 +85,9 @@ class InsightsScreen extends StatelessWidget {
 
               // Weekly Summary
               if (bubbleProvider.totalBubbles > 0) ...[
-                const Text(
+                Text(
                   'This Week',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2D3748),
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 16),
                 Container(
@@ -115,11 +108,7 @@ class InsightsScreen extends StatelessWidget {
                     children: [
                       Text(
                         weeklyStats.summary,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF4A5568),
-                          height: 1.6,
-                        ),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -143,13 +132,9 @@ class InsightsScreen extends StatelessWidget {
 
               // Emotion Distribution
               if (emotions.isNotEmpty) ...[
-                const Text(
+                Text(
                   'Emotion Distribution',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2D3748),
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 16),
                 ...emotions.map((emotion) => _buildEmotionBar(emotion)),
@@ -186,18 +171,18 @@ class InsightsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3748),
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF718096),
+              color: AppColors.textMuted,
             ),
           ),
         ],
@@ -211,17 +196,17 @@ class InsightsScreen extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2D3748),
+            color: AppColors.textPrimary,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Color(0xFF718096),
+            color: AppColors.textMuted,
           ),
         ),
       ],
@@ -239,17 +224,17 @@ class InsightsScreen extends StatelessWidget {
             children: [
               Text(
                 emotion.emotion,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF4A5568),
+                  color: AppColors.textSecondary,
                 ),
               ),
               Text(
                 '${emotion.percentage.toInt()}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF718096),
+                  color: AppColors.textMuted,
                 ),
               ),
             ],
@@ -259,7 +244,7 @@ class InsightsScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: emotion.percentage / 100,
-              backgroundColor: const Color(0xFFEDF2F7),
+              backgroundColor: AppColors.surfaceVariant,
               valueColor: AlwaysStoppedAnimation<Color>(
                 _getEmotionColor(emotion.emotion),
               ),
@@ -273,14 +258,14 @@ class InsightsScreen extends StatelessWidget {
 
   Color _getEmotionColor(String emotion) {
     final colors = {
-      'anxious': const Color(0xFF9F7AEA),
-      'sad': const Color(0xFF63B3ED),
-      'angry': const Color(0xFFFC8181),
-      'stressed': const Color(0xFFE8A87C),
-      'tired': const Color(0xFF718096),
-      'lonely': const Color(0xFF4A5568),
+      'anxious': AppColors.emotionAnxious,
+      'sad': AppColors.emotionSad,
+      'angry': AppColors.emotionAngry,
+      'stressed': AppColors.emotionStressed,
+      'tired': AppColors.emotionTired,
+      'lonely': AppColors.emotionLonely,
     };
-    return colors[emotion.toLowerCase()] ?? const Color(0xFF6B9AC4);
+    return colors[emotion.toLowerCase()] ?? AppColors.primary;
   }
 
   Widget _buildEmptyState() {
@@ -291,23 +276,23 @@ class InsightsScreen extends StatelessWidget {
           Icon(
             Icons.insights_outlined,
             size: 80,
-            color: const Color(0xFFCBD5E0),
+            color: AppColors.disabled,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No insights yet',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF4A5568),
+              color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Create and release bubbles to see your patterns',
             style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF718096),
+              color: AppColors.textMuted,
             ),
           ),
         ],

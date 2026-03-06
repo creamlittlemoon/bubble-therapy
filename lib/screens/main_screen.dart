@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import 'home_screen.dart';
 import 'bubble_pool_screen.dart';
 import 'memory_sky_screen.dart';
@@ -68,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF6B9AC4).withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? AppColors.primaryWithOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -76,7 +77,7 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             Icon(
               _icons[index],
-              color: isSelected ? const Color(0xFF6B9AC4) : const Color(0xFF9CA3AF),
+              color: isSelected ? AppColors.primary : AppColors.textHint,
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -85,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? const Color(0xFF6B9AC4) : const Color(0xFF9CA3AF),
+                color: isSelected ? AppColors.primary : AppColors.textHint,
               ),
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../theme/app_colors.dart';
 
 /// Non-interactive ambient layer for the home screen: decorative bubbles,
 /// soft mist, and drifting particles. Kept visually distinct from user bubbles
@@ -7,7 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 class HomeAmbientLayer extends StatelessWidget {
   const HomeAmbientLayer({super.key});
 
-  static const _accent = Color(0xFF6B9AC4);
+  static const _accent = AppColors.primary;
   static const _mistOpacity = 0.04;
   static const _bubbleOpacity = 0.18;
   static const _particleOpacity = 0.10;
@@ -147,12 +148,12 @@ class _DecorativeBubble extends StatelessWidget {
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              HomeAmbientLayer._accent.withOpacity(HomeAmbientLayer._bubbleOpacity),
-              HomeAmbientLayer._accent.withOpacity(HomeAmbientLayer._bubbleOpacity * 0.3),
+              AppColors.primary.withOpacity(HomeAmbientLayer._bubbleOpacity),
+              AppColors.primary.withOpacity(HomeAmbientLayer._bubbleOpacity * 0.3),
             ],
           ),
           border: Border.all(
-            color: HomeAmbientLayer._accent.withOpacity(0.12),
+            color: AppColors.primary.withOpacity(0.12),
             width: 1,
           ),
         ),
@@ -185,7 +186,7 @@ class _Particle extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: HomeAmbientLayer._accent.withOpacity(HomeAmbientLayer._particleOpacity),
+          color: AppColors.primary.withOpacity(HomeAmbientLayer._particleOpacity),
         ),
       )
           .animate(delay: (index * 120).ms)

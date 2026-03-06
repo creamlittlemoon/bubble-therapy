@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../providers/memory_provider.dart';
+import '../theme/app_colors.dart';
 
 class MemorySkyScreen extends StatelessWidget {
   const MemorySkyScreen({super.key});
@@ -12,7 +13,7 @@ class MemorySkyScreen extends StatelessWidget {
     final stars = memoryProvider.stars;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A202C),
+      backgroundColor: AppColors.surfaceDark,
       body: SafeArea(
         child: Column(
           children: [
@@ -25,20 +26,20 @@ class MemorySkyScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Memory Sky',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: AppColors.onPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '${stars.length} stars shining',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFA0AEC0),
+                          color: AppColors.onSurfaceDark,
                         ),
                       ),
                     ],
@@ -46,12 +47,12 @@ class MemorySkyScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8A87C).withOpacity(0.2),
+                      color: AppColors.secondaryWithOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.star,
-                      color: Color(0xFFE8A87C),
+                      color: AppColors.secondary,
                     ),
                   ),
                 ],
@@ -78,23 +79,23 @@ class MemorySkyScreen extends StatelessWidget {
           Icon(
             Icons.nightlight_round,
             size: 80,
-            color: const Color(0xFF4A5568),
+            color: AppColors.textSecondary,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Your sky is empty',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: AppColors.onPrimary,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Release bubbles to create stars',
             style: TextStyle(
               fontSize: 14,
-              color: Color(0xFFA0AEC0),
+              color: AppColors.onSurfaceDark,
             ),
           ),
         ],
@@ -125,11 +126,11 @@ class MemorySkyScreen extends StatelessWidget {
       onTap: () => _showStarDetail(context, star),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFE8A87C).withOpacity(brightness * 0.3),
+          color: AppColors.secondary.withOpacity(brightness * 0.3),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFE8A87C).withOpacity(brightness * 0.5),
+              color: AppColors.secondary.withOpacity(brightness * 0.5),
               blurRadius: 20 * brightness,
               spreadRadius: 5 * brightness,
             ),
@@ -138,7 +139,7 @@ class MemorySkyScreen extends StatelessWidget {
         child: Center(
           child: Icon(
             Icons.star,
-            color: const Color(0xFFE8A87C).withOpacity(0.8 + brightness * 0.2),
+            color: AppColors.secondary.withOpacity(0.8 + brightness * 0.2),
             size: 24.0 + brightness * 16,
           ),
         ),
@@ -155,9 +156,9 @@ class MemorySkyScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Color(0xFF2D3748),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: AppColors.textPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -166,39 +167,39 @@ class MemorySkyScreen extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFF4A5568),
+                color: AppColors.textSecondary,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 24),
-            const Icon(
+            Icon(
               Icons.star,
               size: 48,
-              color: Color(0xFFE8A87C),
+              color: AppColors.secondary,
             ),
             const SizedBox(height: 16),
             Text(
               'Released on ${_formatDate(star.releasedAt)}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: Color(0xFFA0AEC0),
+                color: AppColors.onSurfaceDark,
               ),
             ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1A202C),
+                color: AppColors.surfaceDark,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 children: [
                   Text(
                     '"${star.worry}"',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontStyle: FontStyle.italic,
-                      color: Color(0xFFCBD5E0),
+                      color: AppColors.disabled,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -209,14 +210,14 @@ class MemorySkyScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF6B9AC4).withOpacity(0.2),
+                color: AppColors.primaryWithOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 star.reflection,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF90CDF4),
+                  color: AppColors.primaryLight,
                 ),
                 textAlign: TextAlign.center,
               ),

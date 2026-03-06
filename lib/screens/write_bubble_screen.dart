@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/bubble_provider.dart';
+import '../theme/app_colors.dart';
 
 class WriteBubbleScreen extends StatefulWidget {
   const WriteBubbleScreen({super.key});
@@ -30,20 +31,17 @@ class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Color(0xFF4A5568)),
+          icon: Icon(Icons.close, color: AppColors.textSecondary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'New Bubble',
-          style: TextStyle(
-            color: Color(0xFF2D3748),
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
       body: Padding(
@@ -51,21 +49,14 @@ class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'What\'s on your mind?',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3748),
-              ),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Write your worry, fear, or anything you want to release',
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF718096),
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
             Expanded(
@@ -88,16 +79,12 @@ class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
                   maxLines: null,
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF2D3748),
-                    height: 1.6,
-                  ),
-                  decoration: const InputDecoration(
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                  decoration: InputDecoration(
                     hintText: 'Start typing...',
-                    hintStyle: TextStyle(
-                      color: Color(0xFFA0AEC0),
-                    ),
+                    hintStyle: Theme.of(context).inputDecorationTheme.hintStyle,
                     border: InputBorder.none,
                   ),
                 ),
@@ -116,12 +103,12 @@ class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
                         Navigator.pop(context);
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6B9AC4),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  disabledBackgroundColor: const Color(0xFFCBD5E0),
+                  disabledBackgroundColor: AppColors.disabled,
                 ),
                 child: const Text(
                   'Create Bubble',

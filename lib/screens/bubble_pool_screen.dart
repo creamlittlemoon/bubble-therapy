@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/bubble_provider.dart';
+import '../theme/app_colors.dart';
 
 class BubblePoolScreen extends StatelessWidget {
   const BubblePoolScreen({super.key});
@@ -11,7 +12,7 @@ class BubblePoolScreen extends StatelessWidget {
     final todaysBubbles = bubbleProvider.todaysBubbles;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -24,21 +25,17 @@ class BubblePoolScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Today\'s Bubbles',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3748),
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '${todaysBubbles.length} bubbles created',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF718096),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ),
@@ -49,7 +46,7 @@ class BubblePoolScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8A87C).withOpacity(0.1),
+                        color: AppColors.secondaryWithOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -60,16 +57,16 @@ class BubblePoolScreen extends StatelessWidget {
                                 ? Icons.warning_amber 
                                 : Icons.check_circle,
                             size: 16,
-                            color: const Color(0xFFE8A87C),
+                            color: AppColors.secondary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             todaysBubbles.length > 5 
                                 ? 'Take a breath' 
                                 : 'Doing well',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFFE8A87C),
+                              color: AppColors.secondary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -83,7 +80,7 @@ class BubblePoolScreen extends StatelessWidget {
             // Bubble List
             Expanded(
               child: todaysBubbles.isEmpty
-                  ? _buildEmptyState()
+                  ? _buildEmptyState(context)
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       itemCount: todaysBubbles.length,
@@ -104,8 +101,8 @@ class BubblePoolScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => _showNightRitualDialog(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2D3748),
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.textPrimary,
+                      foregroundColor: AppColors.onPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -133,7 +130,7 @@ class BubblePoolScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -141,24 +138,20 @@ class BubblePoolScreen extends StatelessWidget {
           Icon(
             Icons.bubble_chart_outlined,
             size: 80,
-            color: const Color(0xFFCBD5E0),
+            color: AppColors.disabled,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No bubbles yet today',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF4A5568),
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 18,
+                  color: AppColors.textSecondary,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Create a bubble when you need to release something',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF718096),
-            ),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),
@@ -171,13 +164,13 @@ class BubblePoolScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: bubble.isReleased 
-            ? const Color(0xFF6B9AC4).withOpacity(0.1)
+            ? AppColors.primaryWithOpacity(0.1)
             : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: bubble.isReleased
-              ? const Color(0xFF6B9AC4).withOpacity(0.3)
-              : const Color(0xFFE2E8F0),
+              ? AppColors.primaryWithOpacity(0.3)
+              : AppColors.border,
         ),
       ),
       child: Column(
@@ -192,8 +185,8 @@ class BubblePoolScreen extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: bubble.isReleased
-                      ? const Color(0xFF6B9AC4).withOpacity(0.2)
-                      : const Color(0xFFEDF2F7),
+                      ? AppColors.primaryWithOpacity(0.2)
+                      : AppColors.surfaceVariant,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -202,17 +195,17 @@ class BubblePoolScreen extends StatelessWidget {
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                     color: bubble.isReleased
-                        ? const Color(0xFF6B9AC4)
-                        : const Color(0xFF718096),
+                        ? AppColors.primary
+                        : AppColors.textMuted,
                   ),
                 ),
               ),
               const Spacer(),
               Text(
                 '${bubble.createdAt.hour}:${bubble.createdAt.minute.toString().padLeft(2, '0')}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFFA0AEC0),
+                  color: AppColors.textHint,
                 ),
               ),
             ],
@@ -222,7 +215,7 @@ class BubblePoolScreen extends StatelessWidget {
             bubble.worry,
             style: TextStyle(
               fontSize: 15,
-              color: const Color(0xFF2D3748),
+              color: AppColors.textPrimary,
               decoration: bubble.isReleased
                   ? TextDecoration.lineThrough
                   : TextDecoration.none,
@@ -232,9 +225,9 @@ class BubblePoolScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Feeling: ${bubble.emotion}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: Color(0xFF718096),
+                color: AppColors.textMuted,
               ),
             ),
           ],
@@ -269,7 +262,7 @@ class BubblePoolScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2D3748),
+              backgroundColor: AppColors.textPrimary,
             ),
             child: const Text('Release All'),
           ),

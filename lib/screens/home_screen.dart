@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../providers/bubble_provider.dart';
 import '../providers/memory_provider.dart';
+import '../theme/app_colors.dart';
 import '../widgets/home_ambient_layer.dart';
 import 'write_bubble_screen.dart';
 import 'reflection_screen.dart';
@@ -16,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     final unreleased = bubbleProvider.unreleasedBubbles;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -29,22 +30,17 @@ class HomeScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Bubble Therapy',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3748),
-                          letterSpacing: -0.5,
-                        ),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Release your worries into bubbles',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: const Color(0xFF718096),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ),
@@ -53,7 +49,7 @@ class HomeScreen extends StatelessWidget {
                     child: Icon(
                       Icons.bubble_chart,
                       size: 28,
-                      color: const Color(0xFF6B9AC4),
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -95,8 +91,8 @@ class HomeScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6B9AC4),
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -132,29 +128,23 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Your mind is clear for now',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF2D3748),
-                letterSpacing: -0.3,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 20,
+                    letterSpacing: -0.3,
+                  ),
               textAlign: TextAlign.center,
             )
                 .animate()
                 .fadeIn(duration: 600.ms, curve: Curves.easeOut)
                 .slideY(begin: 0.08, end: 0, duration: 500.ms, curve: Curves.easeOut),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'When something feels heavy, tap "New Bubble" below. '
               'Write it down, turn it into a bubble, and release it when you\'re ready.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF718096),
-                height: 1.55,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.55),
             )
                 .animate(delay: 150.ms)
                 .fadeIn(duration: 500.ms, curve: Curves.easeOut)
@@ -200,17 +190,17 @@ class HomeScreen extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            const Color(0xFF6B9AC4).withOpacity(0.45),
-            const Color(0xFF6B9AC4).withOpacity(0.18),
+            AppColors.primaryWithOpacity(0.45),
+            AppColors.primaryWithOpacity(0.18),
           ],
         ),
         border: Border.all(
-          color: const Color(0xFF6B9AC4).withOpacity(0.5),
+          color: AppColors.primaryWithOpacity(0.5),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6B9AC4).withOpacity(0.25),
+            color: AppColors.primaryWithOpacity(0.25),
             blurRadius: 16,
             spreadRadius: 2,
           ),
@@ -226,7 +216,7 @@ class HomeScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: size > 100 ? 14 : 12,
-              color: const Color(0xFF4A5568),
+              color: AppColors.textSecondary,
             ),
           ),
         ),
@@ -251,17 +241,17 @@ class HomeScreen extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFFE2E8F0),
+                color: AppColors.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 24),
             Text(
               '"${bubble.worry}"',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontStyle: FontStyle.italic,
-                color: Color(0xFF4A5568),
+                color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -270,7 +260,7 @@ class HomeScreen extends StatelessWidget {
               context,
               'Release Bubble',
               Icons.favorite_border,
-              const Color(0xFF6B9AC4),
+              AppColors.primary,
               () {
                 Navigator.pop(context);
                 _showReleaseDialog(context, bubble);
@@ -281,7 +271,7 @@ class HomeScreen extends StatelessWidget {
               context,
               'Pop Bubble',
               Icons.close,
-              const Color(0xFFE8A87C),
+              AppColors.secondary,
               () {
                 Navigator.pop(context);
                 Provider.of<BubbleProvider>(context, listen: false)
@@ -353,16 +343,16 @@ class HomeScreen extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: selectedEmotion == emotion
-                          ? const Color(0xFF6B9AC4)
-                          : const Color(0xFFEDF2F7),
+                          ? AppColors.primary
+                          : AppColors.surfaceVariant,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       emotion,
                       style: TextStyle(
                         color: selectedEmotion == emotion
-                            ? Colors.white
-                            : const Color(0xFF4A5568),
+                            ? AppColors.onPrimary
+                            : AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -403,7 +393,7 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6B9AC4),
+                backgroundColor: AppColors.primary,
               ),
               child: const Text('Release'),
             ),
