@@ -39,6 +39,34 @@ class Bubble {
       posY: posY,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'worry': worry,
+      'createdAt': createdAt.toIso8601String(),
+      'isReleased': isReleased,
+      'reflection': reflection,
+      'emotion': emotion,
+      'size': size,
+      'posX': posX,
+      'posY': posY,
+    };
+  }
+
+  static Bubble fromJson(Map<String, dynamic> json) {
+    return Bubble(
+      id: json['id'] as String,
+      worry: json['worry'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      isReleased: json['isReleased'] as bool? ?? false,
+      reflection: json['reflection'] as String?,
+      emotion: json['emotion'] as String?,
+      size: (json['size'] as num?)?.toDouble(),
+      posX: (json['posX'] as num?)?.toDouble(),
+      posY: (json['posY'] as num?)?.toDouble(),
+    );
+  }
 }
 
 // Star Model (released bubbles become stars)
@@ -60,6 +88,30 @@ class Star {
     this.emotion,
     this.brightness = 1.0,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'originalBubbleId': originalBubbleId,
+      'worry': worry,
+      'reflection': reflection,
+      'releasedAt': releasedAt.toIso8601String(),
+      'emotion': emotion,
+      'brightness': brightness,
+    };
+  }
+
+  static Star fromJson(Map<String, dynamic> json) {
+    return Star(
+      id: json['id'] as String,
+      originalBubbleId: json['originalBubbleId'] as String,
+      worry: json['worry'] as String,
+      reflection: json['reflection'] as String,
+      releasedAt: DateTime.parse(json['releasedAt'] as String),
+      emotion: json['emotion'] as String?,
+      brightness: (json['brightness'] as num?)?.toDouble() ?? 1.0,
+    );
+  }
 }
 
 // Emotion Insight Model

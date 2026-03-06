@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/app_provider.dart';
 import '../providers/bubble_provider.dart';
 import '../providers/memory_provider.dart';
 import '../theme/app_colors.dart';
@@ -143,6 +145,29 @@ class InsightsScreen extends StatelessWidget {
               // Empty State
               if (bubbleProvider.totalBubbles == 0)
                 _buildEmptyState(),
+
+              // Developer: reset onboarding & demo data (debug only)
+              if (kDebugMode) ...[
+                const SizedBox(height: 48),
+                Center(
+                  child: TextButton(
+                    onPressed: () async {
+                      await context.read<AppProvider>().resetOnboardingAndDemoData(
+                            context.read<BubbleProvider>(),
+                            context.read<MemoryProvider>(),
+                          );
+                    },
+                    child: Text(
+                      'Dev: Reset onboarding & demo data',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textHint,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'providers/app_provider.dart';
 import 'providers/bubble_provider.dart';
 import 'providers/memory_provider.dart';
-import 'screens/main_screen.dart';
+import 'screens/bootstrap_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -31,7 +31,7 @@ class BubbleTherapyApp extends StatelessWidget {
         title: 'Bubble Therapy',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
-        home: const MainScreen(),
+        home: const BootstrapScreen(),
       ),
     );
   }

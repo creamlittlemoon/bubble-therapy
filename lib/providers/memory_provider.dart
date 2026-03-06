@@ -1,26 +1,43 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
+import '../services/storage_service.dart';
 
 class MemoryProvider extends ChangeNotifier {
   final List<Star> _stars = [];
+  StorageService? _storage;
 
   List<Star> get stars => _stars;
   int get starCount => _stars.length;
 
-  void addStar(Bubble bubble) {
+  void setStorage(StorageService? storage) {
+    _storage = storage;
+  }
+
+  void setStars(List<Star> stars) {
+    _stars.clear();
+    _stars.addAll(stars);
+    notifyListeners();
+  }
+
+  Future<void> _persistStars() async {
+    await _storage?.saveStars(_stars);
+  }
+
+  void addStar(Bubble bubble, {DateTime? releasedAt}) {
     if (bubble.isReleased && bubble.reflection != null) {
       final star = Star(
         id: 'star_${bubble.id}',
         originalBubbleId: bubble.id,
         worry: bubble.worry,
         reflection: bubble.reflection!,
-        releasedAt: DateTime.now(),
+        releasedAt: releasedAt ?? DateTime.now(),
         emotion: bubble.emotion,
         brightness: 0.5 + (bubble.worry.length / 100).clamp(0.0, 0.5),
       );
-      
+
       _stars.add(star);
       notifyListeners();
+      _persistStars();
     }
   }
 
