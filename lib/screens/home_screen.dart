@@ -46,15 +46,13 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6B9AC4).withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
+                  // Decorative branding element (not a button)
+                  Opacity(
+                    opacity: 0.5,
+                    child: Icon(
                       Icons.bubble_chart,
-                      color: Color(0xFF6B9AC4),
+                      size: 28,
+                      color: const Color(0xFF6B9AC4),
                     ),
                   ),
                 ],
@@ -116,42 +114,48 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: const Color(0xFF6B9AC4).withOpacity(0.1),
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: const Color(0xFF6B9AC4).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.bubble_chart,
+                size: 60,
+                color: Color(0xFF6B9AC4),
+              ),
+            ).animate(onPlay: (c) => c.repeat(reverse: true))
+             .scaleXY(begin: 1, end: 1.1, duration: 2000.ms),
+            const SizedBox(height: 24),
+            const Text(
+              'Your mind is clear for now',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2D3748),
+              ),
+              textAlign: TextAlign.center,
             ),
-            child: const Icon(
-              Icons.bubble_chart,
-              size: 60,
-              color: Color(0xFF6B9AC4),
+            const SizedBox(height: 8),
+            const Text(
+              'When something feels heavy, tap "New Bubble" below. '
+              'Write it down, turn it into a bubble, and release it when you\'re ready.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF718096),
+                height: 1.5,
+              ),
             ),
-          ).animate(onPlay: (c) => c.repeat(reverse: true))
-           .scaleXY(begin: 1, end: 1.1, duration: 2000.ms),
-          const SizedBox(height: 24),
-          const Text(
-            'No worries right now',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2D3748),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Tap "New Bubble" when something\'s on your mind',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: const Color(0xFF718096),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -171,7 +175,7 @@ class HomeScreen extends StatelessWidget {
             },
             child: _buildBubbleWidget(bubble),
           ).animate(onPlay: (c) => c.repeat(reverse: true))
-           .translateY(begin: -5, end: 5, duration: (2000 + index * 200).ms),
+           .move(begin: const Offset(0, -5), end: const Offset(0, 5), duration: (2000 + index * 200).ms),
         );
       }).toList(),
     );

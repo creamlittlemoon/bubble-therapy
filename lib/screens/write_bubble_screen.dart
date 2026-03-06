@@ -17,6 +17,7 @@ class _WriteBubbleScreenState extends State<WriteBubbleScreen> {
   void initState() {
     super.initState();
     _focusNode.requestFocus();
+    _controller.addListener(() => setState(() {}));
   }
 
   @override

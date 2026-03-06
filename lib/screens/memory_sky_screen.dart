@@ -114,31 +114,32 @@ class MemorySkyScreen extends StatelessWidget {
       itemCount: stars.length,
       itemBuilder: (context, index) {
         final star = stars[index];
-        return _buildStarItem(star, index);
+        return _buildStarItem(context, star, index);
       },
     );
   }
 
-  Widget _buildStarItem(dynamic star, int index) {
+  Widget _buildStarItem(BuildContext context, dynamic star, int index) {
+    final brightness = (star.brightness as num).toDouble();
     return GestureDetector(
       onTap: () => _showStarDetail(context, star),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFE8A87C).withOpacity(star.brightness * 0.3),
+          color: const Color(0xFFE8A87C).withOpacity(brightness * 0.3),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFE8A87C).withOpacity(star.brightness * 0.5),
-              blurRadius: 20 * star.brightness,
-              spreadRadius: 5 * star.brightness,
+              color: const Color(0xFFE8A87C).withOpacity(brightness * 0.5),
+              blurRadius: 20 * brightness,
+              spreadRadius: 5 * brightness,
             ),
           ],
         ),
         child: Center(
           child: Icon(
             Icons.star,
-            color: const Color(0xFFE8A87C).withOpacity(0.8 + star.brightness * 0.2),
-            size: 24 + star.brightness * 16,
+            color: const Color(0xFFE8A87C).withOpacity(0.8 + brightness * 0.2),
+            size: 24.0 + brightness * 16,
           ),
         ),
       ),
